@@ -1,0 +1,14 @@
+# Node
+node_modules/
+npm-debug.log*
+
+# Workspaces
+apps/*/node_modules/
+
+# Build outputs
+apps/backend/dist/
+apps/frontend/.next/
+
+# Editor
+.vscode/
+.DS_Store
