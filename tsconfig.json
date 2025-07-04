@@ -1,4 +1,13 @@
 {
+	"files": [],
+	"references": [
+		{
+			"path": "apps/backend"
+		},
+		{
+			"path": "apps/frontend"
+		}
+	],
 	"compilerOptions": {
 		"baseUrl": ".",
 		"paths": {
@@ -10,5 +19,5 @@
 			]
 		}
 	},
-	"include": []
+	"skipLibCheck": true
 }
