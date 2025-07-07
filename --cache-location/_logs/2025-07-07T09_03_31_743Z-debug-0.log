@@ -1,0 +1,38 @@
+0 verbose cli /home/ricram/.nvm/versions/node/v24.3.0/bin/node /home/ricram/.nvm/versions/node/v24.3.0/bin/npm
+1 info using npm@11.4.2
+2 info using node@v24.3.0
+3 silly config load:file:/home/ricram/.nvm/versions/node/v24.3.0/lib/node_modules/npm/npmrc
+4 warn Unknown cli config "--max-warnings". This will stop working in the next major version of npm.
+5 silly config load:file:/home/ricram/workspace/github.com/ric-ram/gamestats-dashboard/.npmrc
+6 silly config load:file:/home/ricram/.npmrc
+7 silly config load:file:/home/ricram/.nvm/versions/node/v24.3.0/etc/npmrc
+8 verbose title npm run eslint ./node_modules/.cache/eslint
+9 verbose argv "run" "eslint" "--cache" "--cache-location" "./node_modules/.cache/eslint" "--max-warnings" "0"
+10 verbose logfile logs-max:10 dir:/home/ricram/workspace/github.com/ric-ram/gamestats-dashboard/--cache-location/_logs/2025-07-07T09_03_31_743Z-
+11 verbose logfile /home/ricram/workspace/github.com/ric-ram/gamestats-dashboard/--cache-location/_logs/2025-07-07T09_03_31_743Z-debug-0.log
+12 silly logfile done cleaning log files
+13 verbose stack Error: Missing script: "eslint"
+13 verbose stack
+13 verbose stack Did you mean this?
+13 verbose stack   npm run lint # run the "lint" package script
+13 verbose stack
+13 verbose stack To see a list of scripts, run:
+13 verbose stack   npm run
+13 verbose stack     at #run (/home/ricram/.nvm/versions/node/v24.3.0/lib/node_modules/npm/lib/commands/run.js:115:13)
+13 verbose stack     at async RunScript.exec (/home/ricram/.nvm/versions/node/v24.3.0/lib/node_modules/npm/lib/commands/run.js:44:7)
+13 verbose stack     at async Npm.exec (/home/ricram/.nvm/versions/node/v24.3.0/lib/node_modules/npm/lib/npm.js:208:9)
+13 verbose stack     at async module.exports (/home/ricram/.nvm/versions/node/v24.3.0/lib/node_modules/npm/lib/cli/entry.js:67:5)
+14 error Missing script: "eslint"
+14 error
+14 error Did you mean this?
+14 error   npm run lint # run the "lint" package script
+14 error
+14 error To see a list of scripts, run:
+14 error   npm run
+15 verbose cwd /home/ricram/workspace/github.com/ric-ram/gamestats-dashboard
+16 verbose os Linux 6.6.87.2-microsoft-standard-WSL2
+17 verbose node v24.3.0
+18 verbose npm  v11.4.2
+19 verbose exit 1
+20 verbose code 1
+21 error A complete log of this run can be found in: /home/ricram/workspace/github.com/ric-ram/gamestats-dashboard/--cache-location/_logs/2025-07-07T09_03_31_743Z-debug-0.log

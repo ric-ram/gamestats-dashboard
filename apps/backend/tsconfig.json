@@ -18,16 +18,14 @@
     "noImplicitAny": true,
     "strictBindCallApply": true,
     "noFallthroughCasesInSwitch": true,
-    "moduleResolution": "node",
-    "typeRoots": [
-      "node_modules/@types"
-    ]
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "test/**/*.ts"
   ],
   "exclude": [
     "node_modules",
-    "dist"
+    "dist",
+    "eslint.config.mjs"
   ]
 }

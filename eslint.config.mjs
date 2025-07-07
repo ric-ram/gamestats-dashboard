@@ -1,40 +1,57 @@
-import { FlatCompat } from "@eslint/eslintrc";
-const compat = new FlatCompat({ baseDirectory: import.meta.url });
+// @ts-check
+import eslint from "@eslint/js";
+import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
+import globals from "globals";
+import tseslint from "typescript-eslint";
 
-export default [
-  ...compat.extends(
-    "eslint:recommended",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:prettier/recommended",
-  ),
+export default tseslint.config(
   {
-    files: ["**/*.{ts,tsx,js,jsx}"],
+    ignores: [
+      "apps/*/eslint.config.mjs",
+      "eslint.config.mjs",
+      "node_modules/**",
+      "apps/*/node_modules/**",
+      "apps/backend/dist/**",
+      "apps/frontend/.next/**",
+      "apps/frontend/postcss.config.mjs",
+      "prettier.config.cjs",
+    ],
+  },
+  {
+    files: [
+      "apps/backend/src/**/*.{ts,tsx,js,jsx}",
+      "apps/frontend/src/**/*.{ts,tsx,js,jsx}",
+    ],
+  },
+  eslint.configs.recommended,
+  ...tseslint.configs.recommendedTypeChecked,
+  eslintPluginPrettierRecommended,
+  {
     languageOptions: {
-      parser: "@typescript-eslint/parser",
-      parserOptions: {
-        ecmaVersion: 2023,
-        sourceType: "module",
-        project: ["./tsconfig.json"],
-        ecmaFeatures: { jsx: true },
+      globals: {
+        ...globals.node,
+        ...globals.browser,
       },
-    },
-    plugins: {
-      react: "eslint-plugin-react",
-      "react-hooks": "eslint-plugin-react-hooks",
-    },
-    rules: {
-      // enforce React Hooks rules
-      "react-hooks/rules-of-hooks": "error",
-      "react-hooks/exhaustive-deps": "warn",
-      // disable prop-types (using TS)
-      "react/prop-types": "off",
-      // allow JSX in .tsx
-      "react/jsx-filename-extension": ["error", { extensions: [".tsx"] }],
-    },
-    settings: {
-      react: {
-        version: "detect",
+      sourceType: "commonjs",
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+        ecmaVersion: "latest",
+        sourceType: "module",
+        ecmaFeatures: { jsx: true },
+        project: [
+          "./tsconfig.json",
+          "./apps/backend/tsconfig.json",
+          "./apps/frontend/tsconfig.json",
+        ],
       },
     },
   },
-];
+  {
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-floating-promises": "warn",
+      "@typescript-eslint/no-unsafe-argument": "warn",
+    },
+  },
+);

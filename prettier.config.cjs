@@ -1,9 +1,10 @@
-// prettier.config.cjs
-module.exports = {
+const config = {
   semi: true,
   singleQuote: true,
   trailingComma: "all",
   printWidth: 80,
-  tabWidth: 2,
+  tabWidth: 4,
   endOfLine: "lf",
 };
+
+module.exports = config;
