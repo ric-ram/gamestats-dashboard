@@ -29,6 +29,21 @@ jobs:
             - name: Lint all workspaces
               run: npm run lint
 
+            - name: Shutdown Ubuntu MySQL
+              run: sudo service mysql stop
+
+            - name: Setup MariaDB
+              uses: getong/mariadb-action@v1.11
+              with:
+                  mysql database: 'gamestats'
+                  mysql user: ${{ secrets.DB_USER }}
+                  mysql password: ${{ secrets.DB_PASS }}
+
+            - name: Run Kafka KRaft Broker
+              uses: spicyparrot/kafka-kraft-action@v1.1.0
+              with:
+                  kafka-version: '4.0.0'
+
             - name: Build backend
               run: npm run build:backend
 
