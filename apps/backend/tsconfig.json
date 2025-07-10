@@ -19,11 +19,12 @@
 		"noImplicitAny": true,
 		"strictBindCallApply": true,
 		"noFallthroughCasesInSwitch": true,
-		"useDefineForClassFields": false
+		"useDefineForClassFields": false,
+		"allowJs": true,
 	},
 	"include": [
 		"src/**/*",
-		"test/**/*.ts",
+		"test/**/*",
 		"typeOrm.config.ts",
 		"migrations/**/*.ts"
 	],
