@@ -6,13 +6,13 @@ import {
 } from 'kafkajs';
 import { Injectable, OnApplicationShutdown } from '@nestjs/common';
 
-import { EventDto } from 'src/events/dto/event.dto';
-import { EventsService } from 'src/events/events.service';
+import { EventsService } from '../../events/events.service';
+import { isEventMessage } from '../types/types';
 
 @Injectable()
 export class ConsumerService implements OnApplicationShutdown {
 	private readonly kafka = new Kafka({
-		brokers: ['localhost:9092'],
+		brokers: [process.env.KAFKA_BROKER ?? 'localhost:9092'],
 	});
 	private readonly consumers: Consumer[] = [];
 
@@ -24,6 +24,7 @@ export class ConsumerService implements OnApplicationShutdown {
 		await consumer.connect();
 		await consumer.subscribe(topic);
 		await consumer.run({
+			...config,
 			eachMessage: async (payload) => {
 				if (config.eachMessage) {
 					await config.eachMessage(payload);
@@ -44,8 +45,6 @@ export class ConsumerService implements OnApplicationShutdown {
 				}
 				await this.eventsService.record(parsed);
 			},
-
-			...config,
 		});
 
 		this.consumers.push(consumer);
@@ -56,21 +55,4 @@ export class ConsumerService implements OnApplicationShutdown {
 			await consumer.disconnect();
 		}
 	}
-}
-function isEventMessage(obj: any): obj is EventDto {
-	if (typeof obj !== 'object' || obj === null) {
-		return false;
-	}
-
-	const candidate = obj as Record<string, unknown>;
-
-	if (typeof candidate.type !== 'string') {
-		return false;
-	}
-
-	if (typeof candidate.payload !== 'object' || candidate.payload === null) {
-		return false;
-	}
-
-	return true;
 }

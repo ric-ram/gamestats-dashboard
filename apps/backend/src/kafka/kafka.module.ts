@@ -1,5 +1,5 @@
 import { ConsumerService } from './consumer/consumer.service';
-import { EventsModule } from 'src/events/events.module';
+import { EventsModule } from '../events/events.module';
 import { Module } from '@nestjs/common';
 import { ProducerService } from './producer/producer.service';
 

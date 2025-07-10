@@ -16,7 +16,10 @@ export class Event {
 	@Column({ type: 'json' })
 	payload: any;
 
-	@CreateDateColumn({ type: 'timestamp' })
+	@CreateDateColumn({
+		type: 'datetime',
+		default: () => 'CURRENT_TIMESTAMP',
+	})
 	timestamp: Date;
 
 	constructor(event: Partial<Event>) {

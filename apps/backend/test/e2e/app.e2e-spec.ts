@@ -27,7 +27,6 @@ describe('E2E: Kafka → NestJS → MariaDB', () => {
 		const broker = `localhost:${kafkaContainer.getMappedPort(9093)}`;
 		process.env.KAFKA_BROKER = broker;
 
-		// Start MariaDB container
 		mariadb = await new MariaDbContainer('mariadb:11.5.2').start();
 		process.env.DB_HOST = mariadb.getHost();
 		process.env.DB_PORT = mariadb.getMappedPort(3306).toString();
@@ -36,7 +35,6 @@ describe('E2E: Kafka → NestJS → MariaDB', () => {
 		process.env.DB_NAME = mariadb.getDatabase();
 		process.env.DB_SYNC = 'false';
 
-		// Initialize Nest app
 		const moduleFixture: TestingModule = await Test.createTestingModule({
 			imports: [AppModule],
 		}).compile();
@@ -45,13 +43,12 @@ describe('E2E: Kafka → NestJS → MariaDB', () => {
 		app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
 		await app.init();
 
-		// Run migrations via TypeORM DataSource
 		dataSource = moduleFixture.get(DataSource);
 		await dataSource.runMigrations();
 
 		repo = moduleFixture.get<Repository<Event>>(getRepositoryToken(Event));
 		await repo.clear();
-	}, 300000); // give containers extra time
+	}, 300000);
 
 	afterAll(async () => {
 		await app.close();
