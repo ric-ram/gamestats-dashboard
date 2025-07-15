@@ -13,10 +13,14 @@ on:
 jobs:
     build:
         runs-on: ubuntu-latest
+        env:
+            DB_USER: ${{ secrets.DB_USER }}
+            DB_PASS: ${{ secrets.DB_PASS }}
+            DB_ROOT_PASS: ${{ secrets.DB_ROOT_PASS }}
+            DB_NAME: ${{ secrets.DB_NAME }}
         strategy:
             matrix:
                 node-version: ['22.7.0']
-
         steps:
             - name: Checkout code
               uses: actions/checkout@v3
