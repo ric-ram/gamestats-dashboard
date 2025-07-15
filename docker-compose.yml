@@ -58,6 +58,8 @@ services:
                 condition: service_healthy
             mariadb:
                 condition: service_healthy
+        env_file:
+            - .env.github
         environment:
             CHOKIDAR_USEPOLLING: 'true'
             DB_HOST: mariadb
