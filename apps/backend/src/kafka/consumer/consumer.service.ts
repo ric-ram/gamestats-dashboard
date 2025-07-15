@@ -12,7 +12,7 @@ import { isEventMessage } from '../types/types';
 @Injectable()
 export class ConsumerService implements OnApplicationShutdown {
 	private readonly kafka = new Kafka({
-		brokers: [process.env.KAFKA_BROKER ?? 'localhost:9092'],
+		brokers: [process.env.KAFKA_BROKERS ?? 'localhost:9092'],
 	});
 	private readonly consumers: Consumer[] = [];
 

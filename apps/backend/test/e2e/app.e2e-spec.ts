@@ -25,7 +25,7 @@ describe('E2E: Kafka → NestJS → MariaDB', () => {
 			'confluentinc/cp-kafka:7.9.0',
 		).start();
 		const broker = `localhost:${kafkaContainer.getMappedPort(9093)}`;
-		process.env.KAFKA_BROKER = broker;
+		process.env.KAFKA_BROKERS = broker;
 
 		mariadb = await new MariaDbContainer('mariadb:11.5.2').start();
 		process.env.DB_HOST = mariadb.getHost();

@@ -23,7 +23,7 @@ describe('Kafka Integration Test', () => {
 		kafkaContainer = await new KafkaContainer(
 			'confluentinc/cp-kafka:7.9.0',
 		).start();
-		process.env.KAFKA_BROKER = `${kafkaContainer.getHost()}:${kafkaContainer.getMappedPort(9093)}`;
+		process.env.KAFKA_BROKERS = `${kafkaContainer.getHost()}:${kafkaContainer.getMappedPort(9093)}`;
 
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [
@@ -71,7 +71,7 @@ describe('Kafka Integration Test', () => {
 	}, 30000);
 
 	it('Should consume a produced message and save it to the DB', async () => {
-		const kafka = new Kafka({ brokers: [process.env.KAFKA_BROKER ?? ''] });
+		const kafka = new Kafka({ brokers: [process.env.KAFKA_BROKERS ?? ''] });
 		const producer = kafka.producer();
 		await producer.connect();
 		await producer.send({

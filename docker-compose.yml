@@ -1,0 +1,69 @@
+services:
+    kafka:
+        image: confluentinc/cp-kafka:latest
+        hostname: kafka
+        ports:
+            - '9092:9092'
+            - '9093:9093'
+        environment:
+            KAFKA_PROCESS_ROLES: 'broker,controller'
+            KAFKA_BROKER_ID: 1
+            CLUSTER_ID: 6HvTIMSxTSW2WZF-ySsrfw
+            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,BROKER:PLAINTEXT'
+            KAFKA_LISTENERS: 'CONTROLLER://0.0.0.0:9093,BROKER://0.0.0.0:9092'
+            KAFKA_ADVERTISED_LISTENERS: 'BROKER://kafka:9092'
+            KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+            KAFKA_INTER_BROKER_LISTENER_NAME: 'BROKER'
+            KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:9093'
+            KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+        healthcheck:
+            test: ['CMD-SHELL', 'cub kafka-ready -b kafka:9092 1 20']
+            interval: 15s
+            timeout: 10s
+            retries: 5
+            start_period: 60s
+
+    mariadb:
+        image: mariadb:lts
+        container_name: mariadb_gamestats
+        hostname: mariadb
+        restart: unless-stopped
+        environment:
+            MYSQL_ROOT_PASSWORD: '${DB_ROOT_PASS}'
+            MYSQL_DATABASE: '${DB_NAME}'
+            MYSQL_USER: '${DB_USER}'
+            MYSQL_PASSWORD: '${DB_PASS}'
+        ports:
+            - '3306:3306'
+        volumes:
+            - db_data:/var/lib/mysql
+        healthcheck:
+            test: ['CMD', 'healthcheck.sh', '--connect', '--innodb_initialized']
+            interval: 10s
+            timeout: 5s
+            retries: 5
+            start_period: 10s
+
+    backend:
+        build:
+            context: .
+            dockerfile: Dockerfile.dev
+        #        image: gamestats-backend:latest
+        ports:
+            - '3001:3001'
+        depends_on:
+            kafka:
+                condition: service_healthy
+            mariadb:
+                condition: service_healthy
+        environment:
+            DB_HOST: mariadb
+            DB_PORT: 3306
+            DB_USER: ${DB_USER}
+            DB_PASS: ${DB_PASS}
+            DB_NAME: ${DB_NAME}
+            KAFKA_BROKERS: kafka:9092
+        # command: npm run start:dev
+        # working_dir: /usr/src/app
+volumes:
+    db_data:
