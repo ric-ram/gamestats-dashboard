@@ -33,20 +33,21 @@ jobs:
             - name: Lint all workspaces
               run: npm run lint
 
-            - name: Shutdown Ubuntu MySQL
-              run: sudo service mysql stop
+            - name: Start Kafka & MariaDB services
+              run: docker-compose up -d kafka mariadb
 
-            - name: Setup MariaDB
-              uses: getong/mariadb-action@v1.11
-              with:
-                  mysql database: 'gamestats'
-                  mysql user: ${{ secrets.DB_USER }}
-                  mysql password: ${{ secrets.DB_PASS }}
+            - name: Wait for MariaDB to be ready
+              run: |
+                  docker-compose exec mariadb bash -c "until mysqladmin ping -h localhost --silent; do sleep 1; done"
 
-            - name: Run Kafka KRaft Broker
-              uses: spicyparrot/kafka-kraft-action@v1.1.0
-              with:
-                  kafka-version: '4.0.0'
+            - name: Wait for Kafka to be ready
+              run: |
+                  docker-compose exec kafka bash -c "cub kafka-ready -b kafka:9092 1 20"
+            - name: Run DB migrations
+              run: npm --workspace=apps/backend run typeorm migration:run
+
+            - name: Run backend integration tests
+              run: npm --workspace=apps/backend run test:e2e
 
             - name: Build backend
               run: npm run build:backend
@@ -54,5 +55,12 @@ jobs:
             - name: Build frontend
               run: npm run build:frontend
 
-            - name: Run backend tests
-              run: npm run test
+            - name: Run backend unit tests
+              run: npm --workspace=apps/backend run test
+
+            # - name: Run frontend tests
+            #   run: npm --workspace=apps/frontend run test
+
+            - name: Tear down services
+              if: always()
+              run: docker-compose down --remove-orphans --volumes
