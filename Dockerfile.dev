@@ -9,6 +9,10 @@ RUN npm ci
 
 COPY . .
 
+RUN npm install -g nodemon
+
+ENV CHOKIDAR_USEPOLLING=true
+
 EXPOSE 3001
 
-CMD ["npm", "--prefix", "apps/backend", "run", "start:dev"]
+CMD ["npm",  "--prefix", "apps/backend", "run", "start:dev"]
