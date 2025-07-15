@@ -42,7 +42,7 @@ jobs:
 
             - name: Wait for MariaDB to be ready
               run: |
-                  docker compose exec mariadb bash -c "until mysqladmin ping -h localhost --silent; do sleep 1; done"
+                  docker compose exec mariadb bash -c "healthcheck.sh --connect --innodb_initialize"
 
             - name: Wait for Kafka to be ready
               run: |
