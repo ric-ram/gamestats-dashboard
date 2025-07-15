@@ -38,15 +38,8 @@ jobs:
               run: npm run lint
 
             - name: Start Kafka & MariaDB services
-              run: docker compose up -d kafka mariadb
+              run: docker compose up -- wait -d kafka mariadb
 
-            - name: Wait for MariaDB to be ready
-              run: |
-                  docker compose exec mariadb bash -c "healthcheck.sh --connect --innodb_initialize"
-
-            - name: Wait for Kafka to be ready
-              run: |
-                  docker compose exec kafka bash -c "cub kafka-ready -b kafka:9092 1 20"
             - name: Run DB migrations
               run: npm --workspace=apps/backend run typeorm migration:run
 
