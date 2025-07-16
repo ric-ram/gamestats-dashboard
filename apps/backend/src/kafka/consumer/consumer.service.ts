@@ -9,7 +9,7 @@ import { Injectable, OnApplicationShutdown } from '@nestjs/common';
 
 import { EventsService } from '../../events/events.service';
 import { isEventMessage } from '../types/types';
-import { retry } from 'src/common/retry.helper';
+import { retry } from '../../common/retry.helper';
 
 @Injectable()
 export class ConsumerService implements OnApplicationShutdown {
