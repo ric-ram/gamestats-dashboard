@@ -14,7 +14,39 @@ jobs:
     build:
         runs-on: ubuntu-latest
         environment: develop
+        services:
+            mariadb:
+                image: mariadb:10.11
+                env:
+                    MYSQL_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASS }}
+                    MYSQL_DATABASE: gamestats
+                    MYSQL_USER: ${{ secrets.DB_USER }}
+                    MYSQL_PASSWORD: ${{ secrets.DB_PASS }}
+                ports:
+                    - 3306:3306
+                options: >-
+                    --health-cmd="mysqladmin ping -h localhost --silent"   
+                    --health-interval=           
+                    --health-timeout=5s
+                    --health-retries=5
+
+            kafka:
+                image: confluentinc/cp-kafka:latest
+                env:
+                    KAFKA_BROKER_ID: 1
+                    KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+                    KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+                    KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+                ports:
+                    - 9092:9092
+                options: >-
+                    --health-cmd="cub kafka-ready -b localhost:9092 1 20"
+                    --health-interval=15s
+                    --health-timeout=10s
+                    --health-retries=5
         env:
+            DB_HOST: 127.0.0.1
+            DB_PORT: 3306
             DB_USER: ${{ secrets.DB_USER }}
             DB_PASS: ${{ secrets.DB_PASS }}
             DB_ROOT_PASS: ${{ secrets.DB_ROOT_PASS }}
@@ -38,19 +70,19 @@ jobs:
             - name: Lint all workspaces
               run: npm run lint
 
-            - name: Clean docker environment
-              run: docker compose down --volumes
+            # - name: Clean docker environment
+            #   run: docker compose down --volumes
 
-            - name: Start Kafka & MariaDB services
-              run: docker compose up -d kafka mariadb
+            # - name: Start Kafka & MariaDB services
+            #   run: docker compose up -d kafka mariadb
 
-            - name: Wait for MariaDB to be ready
-              run: |
-                  docker compose exec mariadb bash -c 'until mariadb --protocol=TCP --host=127.0.0.1 --user=root --password="$DB_ROOT_PASS" -e "SELECT 1" >/dev/null 2>&1; do sleep 1; done'
+            # - name: Wait for MariaDB to be ready
+            #   run: |
+            #       docker compose exec mariadb bash -c 'until mariadb --protocol=TCP --host=127.0.0.1 --user=root --password="$DB_ROOT_PASS" -e "SELECT 1" >/dev/null 2>&1; do sleep 1; done'
 
-            - name: Wait for Kafka to be ready
-              run: |
-                  docker compose exec kafka bash -c "cub kafka-ready -b kafka:9092 1 20"
+            # - name: Wait for Kafka to be ready
+            #   run: |
+            #       docker compose exec kafka bash -c "cub kafka-ready -b kafka:9092 1 20"
 
             - name: Run DB migrations
               run: npm --workspace=apps/backend run typeorm migration:run
