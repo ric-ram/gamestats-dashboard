@@ -2,17 +2,65 @@ name: CI
 
 on:
     push:
-        branches: [main]
+        branches:
+            - main
+            - develop
     pull_request:
-        branches: [main]
+        branches:
+            - main
+            - develop
 
 jobs:
     build:
         runs-on: ubuntu-latest
+        environment: develop
+        services:
+            mariadb:
+                image: mariadb:lts
+                env:
+                    MYSQL_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASS }}
+                    MYSQL_DATABASE: ${{ secrets.DB_NAME }}
+                    MYSQL_USER: ${{ secrets.DB_USER }}
+                    MYSQL_PASSWORD: ${{ secrets.DB_PASS }}
+                ports:
+                    - 3306:3306
+                options: >-
+                    --health-cmd="healthcheck.sh --connect --innodb_initialized"   
+                    --health-interval=10s        
+                    --health-timeout=5s
+                    --health-retries=5
+
+            kafka:
+                image: confluentinc/cp-kafka:latest
+                env:
+                    KAFKA_PROCESS_ROLES: 'broker,controller'
+                    KAFKA_BROKER_ID: 1
+                    CLUSTER_ID: 6HvTIMSxTSW2WZF-ySsrfw
+                    KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,BROKER:PLAINTEXT'
+                    KAFKA_LISTENERS: 'CONTROLLER://0.0.0.0:9093,BROKER://0.0.0.0:9092'
+                    KAFKA_ADVERTISED_LISTENERS: 'BROKER://kafka:9092'
+                    KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+                    KAFKA_INTER_BROKER_LISTENER_NAME: 'BROKER'
+                    KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:9093'
+                    KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+                ports:
+                    - 9092:9092
+                    - 9093:9093
+                options: >-
+                    --health-cmd="cub kafka-ready -b localhost:9092 1 20"
+                    --health-interval=15s
+                    --health-timeout=10s
+                    --health-retries=5
+        env:
+            DB_HOST: 127.0.0.1
+            DB_PORT: 3306
+            DB_USER: ${{ secrets.DB_USER }}
+            DB_PASS: ${{ secrets.DB_PASS }}
+            DB_ROOT_PASS: ${{ secrets.DB_ROOT_PASS }}
+            DB_NAME: ${{ secrets.DB_NAME }}
         strategy:
             matrix:
                 node-version: ['22.7.0']
-
         steps:
             - name: Checkout code
               uses: actions/checkout@v3
@@ -29,11 +77,38 @@ jobs:
             - name: Lint all workspaces
               run: npm run lint
 
+            # - name: Clean docker environment
+            #   run: docker compose down --volumes
+
+            # - name: Start Kafka & MariaDB services
+            #   run: docker compose up -d kafka mariadb
+
+            # - name: Wait for MariaDB to be ready
+            #   run: |
+            #       docker compose exec mariadb bash -c 'until mariadb --protocol=TCP --host=127.0.0.1 --user=root --password="$DB_ROOT_PASS" -e "SELECT 1" >/dev/null 2>&1; do sleep 1; done'
+
+            # - name: Wait for Kafka to be ready
+            #   run: |
+            #       docker compose exec kafka bash -c "cub kafka-ready -b kafka:9092 1 20"
+
+            - name: Run DB migrations
+              run: npm run migrate:run
+
+            # - name: Run backend integration tests
+            #   run: npm --workspace=apps/backend run test:e2e
+
             - name: Build backend
               run: npm run build:backend
 
             - name: Build frontend
               run: npm run build:frontend
 
-            - name: Run backend tests
-              run: npm run test
+            - name: Run backend unit tests
+              run: npm --workspace=apps/backend run test
+
+            # - name: Run frontend tests
+            #   run: npm --workspace=apps/frontend run test
+
+            - name: Tear down services
+              if: always()
+              run: docker compose down --remove-orphans --volumes
