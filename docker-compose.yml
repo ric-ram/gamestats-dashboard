@@ -32,7 +32,10 @@ services:
             MYSQL_DATABASE: '${DB_NAME}'
             MYSQL_USER: '${DB_USER}'
             MYSQL_PASSWORD: '${DB_PASS}'
+            MARIADB_RANDOM_ROOT_PASSWORD: '1'
             MARIADB_AUTO_UPGRADE: '1'
+            MARIADB_MYSQL_LOCALHOST_USER: '1'
+            MARIADB_MYSQL_LOCALHOST_GRANTS: 'USAGE'
         ports:
             - '3306:3306'
         volumes:

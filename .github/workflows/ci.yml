@@ -37,6 +37,9 @@ jobs:
             - name: Lint all workspaces
               run: npm run lint
 
+            - name: Clean docker environment
+              run: docker compose down --volumes
+
             - name: Start Kafka & MariaDB services
               run: docker compose up -d kafka mariadb
 
