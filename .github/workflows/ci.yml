@@ -16,17 +16,17 @@ jobs:
         environment: develop
         services:
             mariadb:
-                image: mariadb:10.11
+                image: mariadb:lts
                 env:
                     MYSQL_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASS }}
-                    MYSQL_DATABASE: gamestats
+                    MYSQL_DATABASE: ${{ secrets.DB_NAME }}
                     MYSQL_USER: ${{ secrets.DB_USER }}
                     MYSQL_PASSWORD: ${{ secrets.DB_PASS }}
                 ports:
                     - 3306:3306
                 options: >-
                     --health-cmd="mysqladmin ping -h localhost --silent"   
-                    --health-interval=           
+                    --health-interval=10s        
                     --health-timeout=5s
                     --health-retries=5
 
