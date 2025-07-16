@@ -46,7 +46,8 @@ jobs:
 
             - name: Wait for MariaDB to be ready
               run: |
-                  docker compose exec mariadb bash -c "healthcheck.sh --su-mysql --connect --innodb_initialized"
+                  docker compose exec mariadb bash -c 'until docker compose logs mariadb 2>&1 | grep -q "mariadbd: ready for connections."; do
+                  echo "Waiting for MariaDB..." sleep 1; done'
 
             - name: Wait for Kafka to be ready
               run: |
