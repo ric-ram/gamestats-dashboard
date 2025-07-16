@@ -38,7 +38,7 @@ jobs:
               run: npm run lint
 
             - name: Start Kafka & MariaDB services
-              run: docker compose up --wait -d kafka mariadb
+              run: docker compose up -d kafka mariadb
 
             - name: Wait for MariaDB to be ready
               run: |
