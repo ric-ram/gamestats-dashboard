@@ -92,7 +92,7 @@ jobs:
             #       docker compose exec kafka bash -c "cub kafka-ready -b kafka:9092 1 20"
 
             - name: Run DB migrations
-              run: npm run typeorm migration:run
+              run: npm run migrate:run
 
             # - name: Run backend integration tests
             #   run: npm --workspace=apps/backend run test:e2e
