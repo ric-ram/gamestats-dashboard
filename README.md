@@ -1,14 +1,18 @@
+[![CI](https://github.com/ric-ram/gamestats-dashboard/actions/workflows/ci.yml/badge.svg)](https://github.com/ric-ram/gamestats-dashboard/actions/workflows/ci.yml)
+
 # GameStats Dashboard
 
 A real-time analytics dashboard for game events. Ingesting Kafka streams, persisting raw events in MariaDB, aggregating with Redis, and visualizing live metrics in Next.js.
 
 ## Overview
 
-GameStats Dashboard lets you track player activities (logins, level completions, card draws) in real time.
+GameStats Dashboard lets you track player activities (logins, level completions, card draws, etc) in real time.
 
 - **Backend:** NestJS Kafka consumer, TypeORM (MariaDB), Redis cache
 - **Frontend:** Next.js with live charts (Recharts)
-- **Dev Environment:** Docker Compose for Kafka, Zookeeper, MariaDB, and the app (auto-rebuild on code changes)
+- **Dev Environment:** Docker Compose for Kafka, MariaDB, and the app (auto-rebuild on code changes)
+
+At this stage, only the /produce-and-save endpoint exists to demonstrate end-to-end ingestion and persistence. The frontend dashboard and additional API endpoints will be added in upcoming milestones.
 
 ## Prerequisites
 
